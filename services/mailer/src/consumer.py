@@ -1,22 +1,13 @@
 from confluent_kafka import Consumer
+from config import *
+from mailer.email_service import send_account_created_email
 
-c = Consumer({
-    'bootstrap.servers': 'mybroker',
-    'group.id': 'mygroup',
+consumer_config = {
+    'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS,
+    'group.id': CONSUMER_GROUP,
     'auto.offset.reset': 'earliest'
-})
+}
 
-c.subscribe(['mytopic'])
-
-while True:
-    msg = c.poll(1.0)
-
-    if msg is None:
-        continue
-    if msg.error():
-        print("Consumer error: {}".format(msg.error()))
-        continue
-
-    print('Received message: {}'.format(msg.value().decode('utf-8')))
-
-c.close()
+consumer = Consumer(consumer_config)
+topics = [USER_CREATED_TOPIC, USER_CREATING_TOPIC]
+consumer.subscribe(topics)

@@ -1,22 +1,51 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
-import config
+import json
+import logging
+import os
+from consumer import consumer
+from confluent_kafka import KafkaError
+from topic_handler import TopicHandler
 
+# Specify the log folder and file name
+log_folder = './logs'
+log_file = 'error.log'
 
-server = smtplib.SMTP(config.SMTP_SERVER, config.SMTP_PORT)
-server.starttls()  # Upgrade the connection to use TLS
-server.login(config.SMTP_USERNAME, config.SMTP_PASSWORD)
+# Combine the log folder and file name to create the full log file path
+log_file_path = os.path.join(log_folder, log_file)
 
-subject = "Hello, World!"
-body = "This is a test email sent from Python."
+# Configure logging
+logging.basicConfig(
+    level=logging.ERROR,  # Set the desired logging level
+    format="%(asctime)s [%(levelname)s] - %(message)s",
+    filename=log_file_path,  # Log file path in the specified folder
+    filemode="a"  # Append mode
+)
 
-msg = MIMEMultipart()
-msg["From"] = config.MAIL_DEFAULT_SENDER
-msg["To"] = "recipient@example.com"
-msg["Subject"] = subject
+logger = logging.getLogger(__name__)
 
-msg.attach(MIMEText(body, "plain"))
-server.sendmail(config.MAIL_DEFAULT_SENDER,
-                "recipient@example.com", msg.as_string())
-server.quit()
+try:
+    while True:
+        msg = consumer.poll(1.0)
+        if msg is None:
+            continue
+        if msg.error():
+            if msg.error().code() == KafkaError._PARTITION_EOF:
+                print('Reached the end of the partition')
+            else:
+                logger.error('Kafka Error: {}'.format(msg.error()))
+        else:
+            try:
+                message_object = json.loads(msg.value())
+                topic = msg.topic()
+                topic_handler = TopicHandler(topic)
+                topic_handler.handle(message_object)
+            except json.JSONDecodeError as e:
+                logger.error('Error decoding JSON message: {}'.format(e))
+            except Exception as ex:
+                logger.error('General Exception: {}'.format(ex))
+
+except KeyboardInterrupt:
+    pass
+except Exception as ex:
+    logger.error('General Exception: {}'.format(ex))
+finally:
+    consumer.close()
