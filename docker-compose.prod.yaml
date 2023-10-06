@@ -67,7 +67,7 @@ services:
       - gateway-network
       - kafka_network
 
-  mailer-service:
+  notification-service:
     build:
       context: ./services/mailer
     depends_on:
