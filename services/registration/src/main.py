@@ -4,7 +4,7 @@ from src.schema import UserRegistration
 from src.config import settings
 from src.dependencies import get_producer
 from aiokafka import AIOKafkaProducer
-
+from worker.main import create_task
 app = FastAPI()
 
 
@@ -16,4 +16,5 @@ async def register_user(
 
     await kafka_producer.send(settings.USER_CREATING_TOPIC,
                               user_data.model_dump_json().encode('utf-8'))
-    return {"message": "User registered successfully", "user_data": user_data}
+    message = create_task.delay("Hello new user")
+    return {"message": f"{message} User registered successfully", "user_data": user_data}

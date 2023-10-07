@@ -16,6 +16,7 @@ RUN pip install --upgrade pip && \
 
 COPY . /src
 ENV PATH "$PATH:/src/scripts"
+ENV PYTHONPATH "${PYTHONPATH}:/src"
 
 RUN useradd -m -d /src -s /bin/bash app \
     && chown -R app:app /src/* && chmod +x /src/scripts/*

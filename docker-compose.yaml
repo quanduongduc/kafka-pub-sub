@@ -60,7 +60,9 @@ services:
       context: ./services/registration
     expose:
       - 8000
-    env_file: ./services/registration/.env
+    environment:
+      - CELERY_BROKER_HOST=registration-redis-broker
+      - CELERY_BROKER_PORT=6379
     depends_on:
       - kafka
     volumes:
@@ -68,25 +70,54 @@ services:
     networks:
       - gateway-network
       - kafka_network
+      - registration-worker-net
 
-  mailer-service:
+  registration-redis-broker:
+    image: redis:latest
+    container_name: registration-redis-broker
+    ports:
+      - "6379:6379"
+    volumes:
+      - /registration-broker/data:/data
+    networks:
+      - registration-worker-net
+
+  registration-worker:
     build:
-      context: ./services/mailer
+      context: ./services/registration
+      dockerfile: Dockerfile.worker
+    volumes:
+      - ./services/registration:/usr/src/app
+    env_file:
+      - services/registration/.env
+    environment:
+      - CELERY_BROKER_HOST=registration-redis-broker
+      - CELERY_BROKER_PORT=6379
+    depends_on:
+      - registration-service
+      - registration-redis-broker
+    networks:
+      - registration-worker-net
+
+  notification-service:
+    build:
+      context: ./services/notification
     depends_on:
       - kafka
     expose:
       - 8080
-    env_file: ./services/mailer/.env
+    env_file: ./services/notification/.env
     networks:
       - kafka_network
     # development only
     x-develop:
       watch:
         - action: rebuild
-          path: ./services/mailer/src
+          path: ./services/notification/src
           target: /src/src
 
 networks:
   gateway-network:
   kafka_network:
     name: kafka_net
+  registration-worker-net:
