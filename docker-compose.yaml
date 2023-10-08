@@ -23,6 +23,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka
     depends_on:
       - zookeeper
     expose:
@@ -35,6 +36,14 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    # entrypoint:
+    #   [
+    #     "/kafka-config/create-topic.sh",
+    #     "$USER_CREATED_TOPIC",
+    #     "$USER_CREATING_TOPIC",
+    #   ]
+    volumes:
+      - ./kafka-config:/kafka-config/
     networks:
       - kafka_network
 
@@ -102,6 +111,5 @@ services:
 networks:
   gateway-network:
   kafka_network:
-    internal: true
   registration-worker-net:
     internal: true
