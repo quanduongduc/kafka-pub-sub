@@ -5,19 +5,10 @@ from consumer import consumer
 from confluent_kafka import KafkaError
 from topic_handler import TopicHandler
 
-# Specify the log folder and file name
-log_folder = './logs'
-log_file = 'error.log'
-
-# Combine the log folder and file name to create the full log file path
-log_file_path = os.path.join(log_folder, log_file)
-
 # Configure logging
 logging.basicConfig(
-    level=logging.ERROR,  # Set the desired logging level
+    level=logging.ERROR,
     format="%(asctime)s [%(levelname)s] - %(message)s",
-    filename=log_file_path,  # Log file path in the specified folder
-    filemode="a"  # Append mode
 )
 
 logger = logging.getLogger(__name__)
