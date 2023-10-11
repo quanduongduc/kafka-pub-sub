@@ -74,7 +74,7 @@ services:
       context: ./services/registration
       dockerfile: Dockerfile.worker
     volumes:
-      - ./services/registration:/usr/src/app
+      - ./services/registration:/src/app
     env_file:
       - services/registration/.env
     environment:

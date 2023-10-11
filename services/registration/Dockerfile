@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONIOENCODING=utf-8
 
-COPY requirements.txt /tmp/
+COPY ./requirements.txt /tmp/
 
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements.txt

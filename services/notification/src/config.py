@@ -13,8 +13,9 @@ MAIL_DEFAULT_SENDER = f'"{APP_NAME}" <example@example.com>'
 
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get(
     'KAFKA_BOOTSTRAP_SERVERS', "kafka:29092")
+
 # kafka topic
-CONSUMER_GROUP = os.environ.get('CONSUMER_GROUP', "mailer")
+CONSUMER_GROUP = os.environ.get('CONSUMER_GROUP', "group.notification")
 USER_CREATING_TOPIC = 'user.creating.key'
 USER_CREATED_TOPIC = 'user.created.key'
 
