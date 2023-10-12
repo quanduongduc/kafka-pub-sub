@@ -53,7 +53,7 @@ services:
       - kafka
       - registration-redis-broker
     volumes:
-      - ./services/registration:/src
+      - ./services/registration/src:/src/src
     networks:
       - kafka_network
       - gateway-network
