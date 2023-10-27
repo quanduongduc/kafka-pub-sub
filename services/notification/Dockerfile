@@ -26,4 +26,4 @@ RUN useradd -m -d /src -s /bin/bash app \
 WORKDIR /src
 USER app
 
-CMD ["./scripts/start.sh"]
+CMD ["./scripts/start-mailer.sh", "&&", "./scripts/start-server.sh"]
