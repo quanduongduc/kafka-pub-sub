@@ -3,7 +3,7 @@ import logging
 import os
 from consumer import consumer
 from confluent_kafka import KafkaError
-from topic_handler import TopicHandler
+from services.notification.src.mailer.topic_handler import TopicHandler
 
 # Configure logging
 logging.basicConfig(

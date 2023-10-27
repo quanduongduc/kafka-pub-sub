@@ -1,13 +1,18 @@
-from confluent_kafka import Consumer
-from config import *
-from mailer.email_service import send_account_created_email
+import logging
+from aiokafka import AIOKafkaConsumer
+import asyncio
+from config import KAFKA_BOOTSTRAP_SERVERS, CONSUMER_GROUP, USER_CREATED_TOPIC, USER_CREATING_TOPIC
 
-consumer_config = {
-    'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS,
-    'group.id': CONSUMER_GROUP,
-    'auto.offset.reset': 'earliest'
-}
 
-consumer = Consumer(consumer_config)
-topics = [USER_CREATED_TOPIC, USER_CREATING_TOPIC]
-consumer.subscribe(topics)
+async def get_consumer():
+    consumer = AIOKafkaConsumer(
+        USER_CREATED_TOPIC, USER_CREATING_TOPIC,
+        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+        group_id=CONSUMER_GROUP)
+    try:
+        await consumer.start()
+        yield consumer
+    except:
+        logging.error('Error while consuming message')
+    finally:
+        await consumer.stop()

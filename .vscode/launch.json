@@ -1,17 +1,37 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Python: Registration Service",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/services/mailer/src/main.py",
-            "cwd": "${workspaceFolder}/services/mailer",
-            "console": "integratedTerminal",
-            "justMyCode": true
+            "module": "uvicorn",
+            "args": [
+                "main:app",
+                "--reload",
+                "--port=5000",
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/services/registration/",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/services/registration/src"
+            }
+        },
+        {
+            "name": "Python: SSE-SERVER",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "main:app",
+                "--reload"
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/services/notification/src",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/services/notification/src/sse-server"
+            }
         }
     ]
 }

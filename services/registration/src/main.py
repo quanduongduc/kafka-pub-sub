@@ -16,5 +16,6 @@ async def register_user(
 ):
     await kafka_producer.send(settings.USER_CREATING_TOPIC,
                               user_data.model_dump_json().encode('utf-8'))
-    message = create_task.delay("Hello new user")
-    return {"message": f"{message} User registered successfully", "user_data": user_data}
+    # message = create_task.delay("Hello new user")
+    # return {"message": f"{message} User registered successfully", "user_data": user_data}
+    return {"message": f"User registered successfully", "user_data": user_data}
