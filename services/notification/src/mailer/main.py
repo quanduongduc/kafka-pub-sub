@@ -2,8 +2,9 @@ import json
 import logging
 import asyncio
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
-from services.notification.src.mailer.topic_handler import TopicHandler
+from mailer.topic_handler import TopicHandler
 from config import KAFKA_BOOTSTRAP_SERVERS, CONSUMER_GROUP, USER_CREATED_TOPIC, USER_CREATING_TOPIC
+
 logging.basicConfig(
     level=logging.ERROR,
     format="%(asctime)s [%(levelname)s] - %(message)s",

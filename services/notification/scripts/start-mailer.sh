@@ -3,4 +3,6 @@
 set -e
 current_dir=$(pwd)
 
-python $current_dir/src/main.py
+PYTHONPATH=$current_dir/src
+
+python $current_dir/src/mailer/main.py
