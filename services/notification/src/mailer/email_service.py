@@ -1,3 +1,4 @@
+import asyncio
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
@@ -12,7 +13,7 @@ env = Environment(loader=FileSystemLoader(templates_dir))
 logger = logging.getLogger(__name__)
 
 
-def send_account_created_email(to_email, username):
+async def send_account_created_email(to_email, username):
     subject = "Account Created"
     template = env.get_template("account_created_email.html")
     body = template.render(username=username, email=to_email)
@@ -22,10 +23,11 @@ def send_account_created_email(to_email, username):
     msg["To"] = to_email
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "html"))
+
     try:
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
-            server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.sendmail(MAIL_DEFAULT_SENDER, to_email, msg.as_string())
+            await server.login(SMTP_USERNAME, SMTP_PASSWORD)
+            await server.sendmail(MAIL_DEFAULT_SENDER, to_email, msg.as_string())
     except smtplib.SMTPException as e:
         logger.error('SMTP Exception: {}'.format(e))
