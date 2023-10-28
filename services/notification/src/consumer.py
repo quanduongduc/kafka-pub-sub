@@ -1,15 +1,22 @@
 import logging
+from typing import List
 from aiokafka import AIOKafkaConsumer
-import asyncio
-from config import KAFKA_BOOTSTRAP_SERVERS, CONSUMER_GROUP, USER_CREATED_TOPIC, USER_CREATING_TOPIC
+from config import settings
+
+
+async def create_consumer(topics: List, group_id: str):
+    consumer = AIOKafkaConsumer(
+        *topics,
+        bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+        group_id=group_id)
+    return consumer
 
 
 async def get_consumer():
-    consumer = AIOKafkaConsumer(
-        USER_CREATED_TOPIC, USER_CREATING_TOPIC,
-        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-        group_id=CONSUMER_GROUP)
     try:
+        consumer = await create_consumer(topics=[settings.USER_CREATED_TOPIC,
+                                                 settings.USER_CREATING_TOPIC],
+                                         group_id=settings.NOTI_CONSUMER_GROUP)
         await consumer.start()
         yield consumer
     except:

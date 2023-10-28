@@ -51,6 +51,7 @@ services:
     environment:
       - CELERY_BROKER_HOST=registration-redis-broker
       - CELERY_BROKER_PORT=6379
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     depends_on:
       - kafka
       - registration-redis-broker
@@ -75,8 +76,6 @@ services:
     build:
       context: ./services/registration
       dockerfile: Dockerfile.worker
-    volumes:
-      - ./services/registration:/src/app
     env_file:
       - services/registration/.env
     environment:
@@ -95,8 +94,11 @@ services:
     expose:
       - 8080
     env_file: ./services/notification/.env
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     networks:
       - kafka_network
+      - gateway-network
     # development only
     x-develop:
       watch:

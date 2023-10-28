@@ -1,7 +1,18 @@
 {
     "configurations": [
         {
-            "name": "Python: Registration Service",
+            "name": "Notifictation : Mailer File",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/services/notification/src/mailer/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/services/notification/src"
+            }
+        },
+        {
+            "name": "Registration Service",
             "type": "python",
             "request": "launch",
             "module": "uvicorn",
@@ -18,7 +29,7 @@
             }
         },
         {
-            "name": "Python: SSE-SERVER",
+            "name": "Notifictation : SSE-SERVER",
             "type": "python",
             "request": "launch",
             "module": "uvicorn",
