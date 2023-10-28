@@ -1,24 +1,18 @@
-import os
-from dotenv import load_dotenv
+from pydantic import BaseSettings
 
-load_dotenv()
 
-# Load individual environment variables
-APP_NAME = "dukwan"
-SMTP_SERVER = os.environ.get("SMTP_SERVER")
-SMTP_PORT = os.environ.get("SMTP_PORT")
-SMTP_USERNAME = os.environ.get("SMTP_USERNAME")
-SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
-MAIL_DEFAULT_SENDER = f'"{APP_NAME}" <example@example.com>'
+class Settings(BaseSettings):
+    APP_NAME: str = "sledgehammer"
+    SMTP_SERVER: str
+    SMTP_PORT: int
+    SMTP_USERNAME: str
+    SMTP_PASSWORD: str
+    MAIL_DEFAULT_SENDER: str
+    KAFKA_BOOTSTRAP_SERVERS: str = "kafka:29092"
+    NOTI_CONSUMER_GROUP: str = "group.notification"
+    MAILER_CONSUMER_GROUP: str = "group.mailer"
+    USER_CREATING_TOPIC: str = 'user.creating.key'
+    USER_CREATED_TOPIC: str = 'user.created.key'
 
-KAFKA_BOOTSTRAP_SERVERS = os.environ.get(
-    'KAFKA_BOOTSTRAP_SERVERS', "kafka:29092")
 
-# kafka topic
-CONSUMER_GROUP = os.environ.get('CONSUMER_GROUP', "group.notification")
-USER_CREATING_TOPIC = 'user.creating.key'
-USER_CREATED_TOPIC = 'user.created.key'
-
-# Check if all required environment variables are set
-if SMTP_SERVER is None or SMTP_PORT is None or SMTP_USERNAME is None or SMTP_PASSWORD is None:
-    print("One or more required environment variables are missing.")
+settings = Settings()
