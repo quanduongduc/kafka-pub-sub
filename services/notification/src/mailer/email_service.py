@@ -2,9 +2,11 @@ import asyncio
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
-import smtplib
+import os
 from jinja2 import Environment, FileSystemLoader
-from config import *
+from config import settings
+import aiosmtplib
+
 
 templates_dir = os.path.abspath(os.path.join(
     os.path.dirname(__file__), 'templates'))
@@ -19,15 +21,20 @@ async def send_account_created_email(to_email, username):
     body = template.render(username=username, email=to_email)
 
     msg = MIMEMultipart()
-    msg["From"] = MAIL_DEFAULT_SENDER
+    msg["From"] = settings.MAIL_DEFAULT_SENDER
     msg["To"] = to_email
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "html"))
 
+    smtp = aiosmtplib.SMTP(hostname=settings.SMTP_SERVER,
+                           port=settings.SMTP_PORT,
+                           use_tls=True)
     try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            await server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            await server.sendmail(MAIL_DEFAULT_SENDER, to_email, msg.as_string())
-    except smtplib.SMTPException as e:
+        await smtp.connect()
+        await smtp.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+        await smtp.send_message(msg)
+
+    except aiosmtplib.SMTPException as e:
         logger.error('SMTP Exception: {}'.format(e))
+    finally:
+        await smtp.quit()

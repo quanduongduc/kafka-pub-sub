@@ -3,7 +3,8 @@ import logging
 import asyncio
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
 from mailer.topic_handler import TopicHandler
-from config import KAFKA_BOOTSTRAP_SERVERS, CONSUMER_GROUP, USER_CREATED_TOPIC, USER_CREATING_TOPIC
+from consumer import create_consumer
+from config import settings
 
 logging.basicConfig(
     level=logging.ERROR,
@@ -38,14 +39,9 @@ async def consume_loop(consumer: AIOKafkaConsumer):
 
 
 async def main():
-    consumer = AIOKafkaConsumer(
-        [USER_CREATED_TOPIC, USER_CREATING_TOPIC],
-        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-        group_id=CONSUMER_GROUP,
-        enable_auto_commit=False,
-        value_deserializer=lambda x: json.loads(x.decode('utf-8')))
-
+    consumer = await create_consumer(topics=[settings.USER_CREATING_TOPIC],
+                                     group_id=settings.MAILER_CONSUMER_GROUP)
     await consumer.start()
     await consume_loop(consumer)
 
-asyncio.run(main())
+asyncio.run(main(), debug=True)

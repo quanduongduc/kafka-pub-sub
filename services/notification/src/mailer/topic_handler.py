@@ -1,4 +1,4 @@
-from config import *
+from config import USER_CREATING_TOPIC
 from mailer.email_service import send_account_created_email
 
 
